@@ -1,14 +1,21 @@
 [BITS 16]
 [ORG 0x7C00]
 
+; start boot
 call clr
 
-; print 
+mov si, info
+call print
+call newline
+
+; start kernel with enter
+call start_kernel
+
+call clr
 mov si, strt
 call print
 call newline
 call newline
-
 call show_prompt
 
 jmp type_key
@@ -80,11 +87,26 @@ show_prompt:
     call print
     ret
 
+start_kernel:
+    call read_key
+    cmp al, 13
+    jne start_kernel
+    ret
+
 done:
     jmp $
 
+; text variables
 strt db "cave os shell", 0
+
+info db "[Cave OS V26.11]", 13, 10
+    db "[Developer: github.com/tekdotos]", 13, 10
+    db "", 13, 10
+    db "Press enter to start the kernel.", 0
+
 prompt db "> ", 0
+
+; commands coming soon
 
 times 510 - ($ - $$) db 0
 dw 0xAA55
